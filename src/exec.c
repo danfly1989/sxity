@@ -30,7 +30,7 @@ void	ft_execute_pipeline(t_dat *d, char ***cmd)
 	}
 	ft_fork_children(d, cmd, fd);
 	ft_close_pipes(fd, d->tot);
-	ft_wait_children(d);
+	ft_wait_children(d->tot);
 	ft_set_main_signals();
 	ft_free_fd(fd);
 }
