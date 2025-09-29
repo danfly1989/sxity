@@ -33,26 +33,6 @@ int	handle_infile(char **tokens, int *i, int *last_in_fd)
 	return (1);
 }
 
-int	ft_redir_in(char *file)
-{
-	int	fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-	{
-		fprintf(stderr, "minishell: %s: No such file or directory\n", file);
-		return (0);
-	}
-	if (dup2(fd, STDIN_FILENO) < 0)
-	{
-		perror("dup2 in");
-		close(fd);
-		return (0);
-	}
-	close(fd);
-	return (1);
-}
-
 int	handle_outfile_trunc(char **tokens, int *i, int *last_out_fd)
 {
 	if (*last_out_fd != -1)
