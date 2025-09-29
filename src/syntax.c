@@ -27,7 +27,8 @@ int	ft_syntax_error(char *token)
 	}
 	else
 		write(2, mes2, ft_strlen(mes2));
-	return (0);
+	g_last_exit_status = 2;
+	return (2);
 }
 
 int	ft_validate_syntax(char **tokens)
@@ -75,5 +76,6 @@ int	ft_syntax_error_msg(char *token)
 		write(2, "newline", 7);
 		write(2, newline, 2);
 	}
-	return (0);
+	g_last_exit_status = 2;
+	return (2);
 }

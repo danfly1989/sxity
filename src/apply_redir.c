@@ -12,10 +12,12 @@
 
 #include "minishell.h"
 
-/*These functions emulate bash as far as output is concerned but follow different logic
-Instead of POSIX Open, dup2, close, repeat, write, the pattern we use here is
-open close if not last fd, then dup2 and write if last_fd. Meaning the behaviour
-of writing to the final file is the same as far as output is concerned.*/
+/*These functions emulate bash as far as output is concerned but follow
+different logic. Instead of POSIX Open, dup2, close, repeat, write,
+the pattern we use here is open close if not last fd,
+then dup2 and write if last_fd.
+Meaning the behaviour of writing to the final file is the same
+as far as output is concerned.*/
 
 static int	apply_input_redirect(int last_in_fd)
 {
