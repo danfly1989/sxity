@@ -20,20 +20,13 @@ char	*ft_extract_token(char *str, t_dat *d, int *quote_type)
 
 	start = d->i;
 	*quote_type = 0;
-	end = ft_get_token_end(str, d->i);
+	end = ft_skip_token(str, d->i);
 	d->i = end;
 	token = ft_strndup(str + start, end - start);
 	if (!token)
 		return (NULL);
 	ft_detect_quote_type(token, quote_type);
 	return (token);
-}
-
-int	ft_get_token_end(char *str, int i)
-{
-	if (str[i] == '\'' || str[i] == '"')
-		return (ft_skip_quote(str, i));
-	return (ft_skip_token(str, i));
 }
 
 char	*ft_extract_var_key(const char *str, size_t *i)
