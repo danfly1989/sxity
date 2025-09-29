@@ -76,7 +76,7 @@ static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 	d.j = 0;
 	while (tokens[d.i])
 	{
-		if (qtypes[d.i] == 1)
+		if (qtypes[d.i] == 1) // single quotes → keep literally
 		{
 			expanded[d.j] = ft_strdup(tokens[d.i]);
 			if (!expanded[d.j])
@@ -85,13 +85,20 @@ static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 		}
 		else
 		{
-			if (expanded[d.j] && expanded[d.j][0] == '\0' && qtypes[d.i] != 2)
+			if (expanded[d.i] && expanded[d.i][0] == '\0' && qtypes[d.i] != 2)
 			{
-				free(expanded[d.j]);
-				expanded[d.j] = NULL;
+				// drop unquoted empty
+				free(expanded[d.i]);
+				expanded[d.i] = NULL;
 			}
-			else
+			else if (expanded[d.i])
+			{
+				// keep/move
+				expanded[d.j] = expanded[d.i];
+				if (d.j != d.i)
+					expanded[d.i] = NULL;
 				d.j++;
+			}
 		}
 		d.i++;
 	}
