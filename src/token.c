@@ -85,3 +85,29 @@ char	*ft_strjoin_char(const char *s, char c)
 	new[len + 1] = '\0';
 	return (new);
 }
+
+char	*ft_expand_token(char *token, t_dat *data, int qt, size_t i)
+{
+	char	*res;
+	char	*tmp;
+
+	if (qt == 1)
+		return (ft_strdup(token));
+	res = ft_calloc(1, sizeof(char));
+	while (token[i])
+	{
+		if (token[i] == '$' && token[i + 1] && (ft_isalpha(token[i + 1])
+				|| token[i + 1] == '_' || token[i + 1] == '?'))
+		{
+			i++;
+			ft_expand_loop(token, data, &res, &i);
+		}
+		else
+		{
+			tmp = res;
+			res = ft_strjoin_char(res, token[i++]);
+			free(tmp);
+		}
+	}
+	return (res);
+}

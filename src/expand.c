@@ -35,32 +35,6 @@ void	ft_expand_loop(char *token, t_dat *data, char **res, size_t *i)
 	free(key);
 }
 
-char	*ft_expand_token(char *token, t_dat *data, int qt, size_t i)
-{
-	char	*res;
-	char	*tmp;
-
-	if (qt == 1)
-		return (ft_strdup(token));
-	res = ft_calloc(1, sizeof(char));
-	while (token[i])
-	{
-		if (token[i] == '$' && token[i + 1] && (ft_isalpha(token[i + 1])
-				|| token[i + 1] == '_' || token[i + 1] == '?'))
-		{
-			i++;
-			ft_expand_loop(token, data, &res, &i);
-		}
-		else
-		{
-			tmp = res;
-			res = ft_strjoin_char(res, token[i++]);
-			free(tmp);
-		}
-	}
-	return (res);
-}
-
 void	*ft_free_error_expanded(char **expanded, int i)
 {
 	while (--i >= 0)
@@ -69,6 +43,9 @@ void	*ft_free_error_expanded(char **expanded, int i)
 	return (NULL);
 }
 
+/*Keep single quotes literally
+drop unquoted empties (resolves Empty test)
+kepp/move if expanded*/
 static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 		char **expanded)
 {
@@ -76,7 +53,7 @@ static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 	d.j = 0;
 	while (tokens[d.i])
 	{
-		if (qtypes[d.i] == 1) // single quotes → keep literally
+		if (qtypes[d.i] == 1)
 		{
 			expanded[d.j] = ft_strdup(tokens[d.i]);
 			if (!expanded[d.j])
@@ -86,14 +63,9 @@ static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 		else
 		{
 			if (expanded[d.i] && expanded[d.i][0] == '\0' && qtypes[d.i] != 2)
-			{
-				// drop unquoted empty
-				free(expanded[d.i]);
-				expanded[d.i] = NULL;
-			}
+				(free(expanded[d.i]), expanded[d.i] = NULL);
 			else if (expanded[d.i])
 			{
-				// keep/move
 				expanded[d.j] = expanded[d.i];
 				if (d.j != d.i)
 					expanded[d.i] = NULL;
@@ -102,8 +74,7 @@ static char	**ft_fill_expanded(t_dat d, char **tokens, int *qtypes,
 		}
 		d.i++;
 	}
-	expanded[d.j] = NULL;
-	return (expanded);
+	return ((expanded[d.j] = NULL), expanded);
 }
 
 char	**ft_expand_tokens(t_dat *d, char **tokens, int *qtypes, int i)
