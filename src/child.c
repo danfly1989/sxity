@@ -55,7 +55,6 @@ void	ft_fork_children(t_dat *d, char ***cmd, int **fd)
 	{
 		if (!cmd[i] || !cmd[i][0])
 		{
-			d->pids[i] = -1;
 			i++;
 			continue ;
 		}
@@ -67,7 +66,6 @@ void	ft_fork_children(t_dat *d, char ***cmd, int **fd)
 		}
 		else if (pid < 0)
 			perror("fork");
-		d->pids[i] = pid;
 		i++;
 	}
 }
@@ -85,39 +83,31 @@ void	ft_nested_child(t_dat *d, char **cmd, char *cmd_path, int s_stdin)
 	exit(1);
 }
 
-void	ft_wait_children(t_dat *d)
+// The  1st message here will occur in the case of a child
+// of a child (grandchild) terminating due to SIGQUIT
+void	ft_wait_children(int tot)
 {
-	int status;
-	size_t i;
-	int signal_num;
-	int last_exit_code;
-	pid_t last_pid;
+	int	status;
+	int	i;
+	int	signal_num;
+	int	last_exit_code;
 
 	last_exit_code = 0;
-	last_pid = d->pids[d->tot - 1];
 	i = 0;
-	while (i < d->tot)
+	while (i < tot)
 	{
-		if (d->pids[i] == -1)
-		{
-			i++;
-			continue ;
-		}
 		signal(SIGINT, SIG_IGN);
-		waitpid(d->pids[i], &status, 0);
-		if (d->pids[i] == last_pid)
+		waitpid(-1, &status, 0);
+		if (WIFSIGNALED(status))
 		{
-			if (WIFSIGNALED(status))
-			{
-				signal_num = WTERMSIG(status);
-				if (signal_num == SIGQUIT)
-					(printf("quit: core dumped\n"), last_exit_code = 131);
-				else if (signal_num == SIGINT)
-					(write(1, "\n", 1), last_exit_code = 130);
-			}
-			else if (WIFEXITED(status))
-				last_exit_code = WEXITSTATUS(status);
+			signal_num = WTERMSIG(status);
+			if (signal_num == SIGQUIT)
+				(printf("quit: core dumped\n"), last_exit_code = 131);
+			else if (signal_num == SIGINT)
+				(write(1, "\n", 1), last_exit_code = 130);
 		}
+		else if (WIFEXITED(status))
+			last_exit_code = WEXITSTATUS(status);
 		i++;
 	}
 	ft_set_main_signals();
