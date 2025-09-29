@@ -12,6 +12,12 @@
 
 #include "minishell.h"
 
+/*Modified this file to return 2 on syntax errors. For validate
+syntax, this was achieved by the call to ft_syntax_error_msg. I
+am uncertain if the change of last_exit status was necessary in this
+case, but I felt it safer and it doesn't break anything.Tests appear
+much more sensitive to the direct return value in this context.*/
+
 int	ft_syntax_error(char *token)
 {
 	char	*mes1;
@@ -36,9 +42,9 @@ int	ft_validate_syntax(char **tokens)
 	int	i;
 
 	if (!tokens || !tokens[0])
-		return (0);
+		return (1);
 	if (ft_is_redirection(tokens[0]) && ft_strcmp(tokens[0], "<<"))
-		return (0);
+		return (ft_syntax_error_msg(tokens[0]));
 	i = 0;
 	while (tokens[i])
 	{
